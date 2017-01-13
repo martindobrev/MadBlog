@@ -1,10 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="${context.get('welcome')}">Welcome to MadBlog with Templates!</title>
+    <meta charset="UTF-8">
+    <title th:text="${context.get('welcome')}">Welcome to MadBlog with Templates!</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="uikit/css/uikit.min.css" />
+
+    <!-- Libraries -->
+    <script src="jquery/jquery.min.js"></script>
+    <script src="uikit/js/uikit.min.js"></script>
 </head>
 <body>
-  <h1>Template test here</h1>
+
+<div class="uk-position-relative">
+    <div class="uk-position-top">
+        <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-active"><a href="#">Home</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">About me</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+<h1>Template test here</h1>
 </body>
 </html>
