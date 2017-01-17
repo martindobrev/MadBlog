@@ -3,10 +3,13 @@ package com.maddob.integration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * HomePage integration test
@@ -36,9 +39,10 @@ public class HomePageTest {
     }
 
     @Test
-    public void testHomePageParameters() {
+    public void testThatCssLoadedCorrectly() {
         String title = webDriver.getTitle();
-        assertEquals("Title shall be 'Hello mad guys!', but was '" + title + "'",
-                "Hello mad guys", title);
+        assertEquals("Title shall be '" + "MADDOB | Home" + "', but was '" + title, "MADDOB | Home", title);
+        WebElement mainMenu = webDriver.findElement(By.id("menu-main"));
+        assertTrue("Main menu shall be in the middle of the page, otherwise CSS was not correctly loaded", mainMenu.getRect().getX() > 200);
     }
 }

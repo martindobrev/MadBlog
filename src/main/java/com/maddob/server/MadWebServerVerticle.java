@@ -26,11 +26,10 @@ public class MadWebServerVerticle extends AbstractVerticle {
         server = getVertx().createHttpServer();
         Router router = Router.router(getVertx());
 
-
         // In order to use a Thymeleaf template we first need to create an engine
         final ThymeleafTemplateEngine engine = ThymeleafTemplateEngine.create();
-        router.get("/template").handler(ctx -> {
-            ctx.put("welcome", "Hi mad dogs! This is a message from thymeleaf!");
+        router.get("/").handler(ctx -> {
+            ctx.put("title", "MADDOB | Home");
 
             engine.render(ctx, "templates/index.html", res -> {
                 if (res.succeeded()) {
