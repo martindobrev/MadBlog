@@ -2,9 +2,9 @@
 <html>
 <head>
     <title th:text="${context.get('title')}">Hello World</title>
-    <link rel="stylesheet" href="uikit/css/uikit.min.css" />
-    <script src="jquery/jquery.min.js"></script>
-    <script src="uikit/js/uikit.min.js"></script>
+    <link rel="stylesheet" href="uikit/css/uikit.min.css" th:href="@{{baseUrl}/uikit/css/uikit.min.css(baseUrl=${BASE_URl})}">
+    <script src="jquery/jquery.min.js" th:src="@{{baseUrl}/jquery/jquery.min.js(baseUrl=${BASE_URl})}"></script>
+    <script src="uikit/js/uikit.min.js" th:src="@{{baseUrl}/uikit/js/uikit.min.js(baseUrl=${BASE_URl})}"></script>
 </head>
 <body>
 
@@ -16,9 +16,8 @@
     </div>
     <div class="uk-navbar-center" id="menu-main">
         <ul class="uk-navbar-nav">
-            <li class="uk-active"><a href="">Hello World</a></li>
-            <li><a href="">Projects</a></li>
-            <li><a href="">BLOG</a></li>
+            <li class="uk-active"><a>Hello World</a></li>
+            <li><a href="articles.html">Articles</a></li>
             <li><a href="">About</a></li>
         </ul>
     </div>
