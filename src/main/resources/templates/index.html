@@ -38,22 +38,21 @@
 <div class="uk-section uk-section-small">
   <div class="uk-container">
     <h2>Latest articles</h2>
-    <div class="uk-grid-divider uk-child-width-expand@s" uk-grid>
-      <div class="uk-width-1-2">
-        <h5>Article 1</h5>
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </div>
-      <div class="uk-width-1-2">
-        <h5>Article 2</h5>
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </div>
-      <div class="uk-width-1-2">
-        <h5>Article 3</h5>
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-      </div>
-      <div class="uk-width-1-2">
-        <h5>Article 3</h5>
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    <hr>
+    <div class="uk-child-width-expand@s" uk-grid>
+
+      <!--/*@thymesVar id="articles" type="List<com.maddob.data.Article>"*/-->
+      <div class="uk-width-1-2" th:each="article : ${articles}">
+        <!--/*@thymesVar id="title" type="java.lang.String"*/-->
+        <article class="uk-article">
+          <h3 th:text="${article.title}"></h3>
+          <p class="uk-article-meta uk-margin-small">Published on <span th:text="${#temporals.format(article.created, 'dd.MM.yyyy')}">24.01.1970</span></p>
+          <p class="uk-margin-small">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
+          </p>
+          <a class="uk-button uk-button-text uk-margin-small" th:href="@{{baseUrl}/articles/{articleTitle}(articleTitle=${article.title},baseUrl=${BASE_URL})}">Read more</a>
+        </article>
       </div>
     </div>
   </div>

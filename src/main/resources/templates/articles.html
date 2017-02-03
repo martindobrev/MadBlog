@@ -27,7 +27,7 @@
         <!--/*@thymesVar id="BASE_URL" type=""*/-->
         <a class="uk-link-reset" th:href="@{{baseUrl}/articles/{articleTitle}(articleTitle=${article.title},baseUrl=${BASE_URL})}" th:text="${article.title}"></a>
       </h1>
-      <p class="uk-article-meta">Written by <a href="#">Super User</a> on 12 April 2012. Posted in <a href="#">Blog</a></p>
+      <p class="uk-article-meta">Published on <span th:text="${#temporals.format(article.created, 'dd.MM.yyyy')}">24.01.1970</span></p>
       <p class="uk-text-lead">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
         magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.

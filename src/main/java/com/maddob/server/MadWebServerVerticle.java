@@ -7,9 +7,9 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
-import org.thymeleaf.templateresolver.FileTemplateResolver;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -22,6 +22,7 @@ import java.util.List;
  * - home page
  * - articles overview
  * - article detailed view
+ * - about page
  *
  * Thymeleaf is used as a template engine
  *
@@ -47,29 +48,38 @@ public class MadWebServerVerticle extends AbstractVerticle {
         final String baseUrl = "http://localhost:25300";
 
         // In order to use a Thymeleaf template we first need to create an engine
+        // We also set the template resolver to be a class loader template resolver
+        // This is necessary, because the other types will not work properly when
+        // running the application from a fat jar
         final ThymeleafTemplateEngine engine = ThymeleafTemplateEngine.create();
-
-        // The default template resolver does not render template fragments,
-        // this can be fixed by a custom FileTempateResolver, but only if the
-        // path to the templates folder is accessible
-        final URL templatesUrl = getClass().getClassLoader().getResource("templates");
-        if (templatesUrl != null) {
-            final String templatesPath = templatesUrl.getPath();
-            if (templatesPath != null) {
-                final FileTemplateResolver resolver = new FileTemplateResolver();
-                resolver.setTemplateMode("HTML");
-                resolver.setPrefix(templatesPath + "/");
-                resolver.setSuffix(".html");
-                engine.getThymeleafTemplateEngine().setTemplateResolver(resolver);
-            }
-        }
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("templates/");
+        templateResolver.setSuffix(".html");
+        engine.getThymeleafTemplateEngine().setTemplateResolver(templateResolver);
+        engine.getThymeleafTemplateEngine().addDialect(new Java8TimeDialect());
 
         // Render the home page
         router.get("/").handler(ctx -> {
             ctx.put("BASE_URL", baseUrl);
             ctx.put("CURRENT_PAGE", "");
             ctx.put("title", "MADDOB | Home");
+            List<Article> articles = articleProvider.getLatestArticles(4);
+            ctx.put("articles", articles);
             engine.render(ctx, "index", res -> {
+                if (res.succeeded()) {
+                    ctx.response().end(res.result());
+                } else {
+                    ctx.fail(res.cause());
+                }
+            });
+        });
+
+        // Render the about page
+        router.get("/about").handler(ctx -> {
+            ctx.put("BASE_URL", baseUrl);
+            ctx.put("CURRENT_PAGE", "about");
+            ctx.put("title", "MADDOB | About");
+            engine.render(ctx, "about", res -> {
                 if (res.succeeded()) {
                     ctx.response().end(res.result());
                 } else {
@@ -103,9 +113,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
             } else {
                 ctx.put("BASE_URL", baseUrl);
                 ctx.put("CURRENT_PAGE", "article");
-                ctx.put("title", article.getTitle());
-                ctx.put("content", article.getContent());
-                ctx.put("created", article.getCreated().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                ctx.put("article", article);
                 engine.render(ctx, "article", res -> {
                     if (res.succeeded()) {
                        ctx.response().end(res.result());
@@ -117,7 +125,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
         });
 
         router.route("/*").handler(StaticHandler.create());
-        server.requestHandler(router::accept).listen(25300);
+        server.requestHandler(router::accept).listen(config().getInteger("http.port", 25300));
     }
 
     @Override

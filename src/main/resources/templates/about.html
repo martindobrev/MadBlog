@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*@thymesVar id="BASE_URL" type="java.lang.String"*/-->
+    <!--/*@thymesVar id="title" type="java.lang.String"*/-->
+    <title th:text="${title}">Hello World</title>
+    <link rel="stylesheet" href="../webroot/uikit/css/uikit.min.css" th:href="@{{baseUrl}/uikit/css/uikit.min.css(baseUrl=${BASE_URL})}">
+    <script src="../webroot/jquery/jquery.min.js" th:src="@{{baseUrl}/jquery/jquery.min.js(baseUrl=${BASE_URL})}"></script>
+    <script src="../webroot/uikit/js/uikit.min.js" th:src="@{{baseUrl}/uikit/js/uikit.min.js(baseUrl=${BASE_URL})}"></script>
+</head>
+<body>
+
+<div th:include="fragments :: header" th:remove="tag"></div>
+
+<hr>
+<div class="uk-section uk-section-small">
+    <div class="uk-container">
+        <h3>About me info here</h3>
+
+        <p>ToDo: Add some nice description here...</p>
+        <p>Maybe with some funny stuff, like coffee counter, etc...</p>
+    </div>
+</div>
+
+<div th:include="fragments :: footer" th:remove="tag"></div>
+
+</body>
+</html>

@@ -15,11 +15,15 @@
 <!--/*@thymesVar id="title" type="java.lang.String"*/-->
 <!--/*@thymesVar id="created" type="java.lang.String"*/-->
 <!--/*@thymesVar id="content" type="java.lang.String"*/-->
-<article class="uk-article">
-  <h1 class="uk-article-title" th:text="${title}">Default title</h1>
-  <p class="uk-article-meta">Written on <span th:text="${created}">01.01.1970</span></p>
-  <div th:text="${content}"></div>
-</article>
+<div class="uk-section uk-section-small">
+  <div class="uk-container">
+    <article class="uk-article">
+      <h1 class="uk-article-title" th:text="${article.title}">Default title</h1>
+      <p class="uk-article-meta">published on <span th:text="${#temporals.format(article.created, 'dd.MM.yyyy')}">24.01.1970</span></p>
+      <div th:utext="${article.content}"></div>
+    </article>
+  </div>
+</div>
 
 <div th:include="fragments :: footer" th:remove="tag"></div>
 
