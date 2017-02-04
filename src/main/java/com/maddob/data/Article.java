@@ -1,5 +1,7 @@
 package com.maddob.data;
 
+import io.vertx.core.shareddata.Shareable;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -11,7 +13,7 @@ import java.util.UUID;
  *
  * Created by martindobrev on 1/17/17.
  */
-public class Article {
+public class Article implements Shareable {
 
     /** Unique id of the article */
     private UUID id;

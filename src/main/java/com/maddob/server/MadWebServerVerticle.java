@@ -2,15 +2,16 @@ package com.maddob.server;
 
 import com.maddob.data.Article;
 import com.maddob.data.ArticleProvider;
+import com.maddob.data.InMemoryArticleProvider;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -32,20 +33,42 @@ import java.util.List;
  */
 public class MadWebServerVerticle extends AbstractVerticle {
 
-    private HttpServer server;
-    private final ArticleProvider articleProvider;
+    /**
+     * Constant to be used for configuration of the in-local-memory database
+     */
+    public static final String CONFIG_DB = "DB";
 
-    public MadWebServerVerticle(ArticleProvider articleProvider) {
-        this.articleProvider = articleProvider;
-    }
+    /**
+     * Constant to be sued for configuration of the HTTP port for the web server
+     */
+    public static final String CONFIG_HTTP_PORT = "http.port";
+
+    /**
+     * Default name of the in-local-memory database location in the vertx shared data
+     */
+    public static final String DB_NAME_DEFAULT = "MadArticles";
+
+    /**
+     * Default http port that will be used in case not provided with a config
+     */
+    private static final int HTTP_PORT_DEFAULT = 25300;
+
+    private HttpServer server;
+    private ArticleProvider articleProvider;
 
     @Override
     public void start() throws Exception {
         super.start();
+
+        // Initialize article provider
+        String databaseLocalShareMapName = config().getString(CONFIG_DB, DB_NAME_DEFAULT);
+        int port = config().getInteger(CONFIG_HTTP_PORT, HTTP_PORT_DEFAULT);
+        LocalMap<String, Article> localDatabase = vertx.sharedData().getLocalMap(databaseLocalShareMapName);
+        articleProvider = new InMemoryArticleProvider(localDatabase);
+
         server = getVertx().createHttpServer();
         Router router = Router.router(getVertx());
-
-        final String baseUrl = "http://localhost:25300";
+        final String baseUrl = "http://localhost:" + port;
 
         // In order to use a Thymeleaf template we first need to create an engine
         // We also set the template resolver to be a class loader template resolver
@@ -125,7 +148,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
         });
 
         router.route("/*").handler(StaticHandler.create());
-        server.requestHandler(router::accept).listen(config().getInteger("http.port", 25300));
+        server.requestHandler(router::accept).listen(port);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.maddob.integration;
 
 import com.maddob.data.Article;
-import com.maddob.data.ArticleProvider;
 import com.maddob.data.InMemoryArticleProvider;
 import com.maddob.server.MadWebServerVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
@@ -33,33 +35,39 @@ import static org.junit.Assert.*;
 @RunWith(VertxUnitRunner.class)
 public class HomePageTest {
 
-    private final static String SERVER_HOST = System.getProperty("server.host", "localhost");
-    private final static String SERVER_PORT = System.getProperty("server.port", "25300");
-    private final static String BASE_URL = "http://" + SERVER_HOST + ":" + SERVER_PORT;
+    private final static Integer TEST_SERVER_PORT = 25303;
+    private final static String BASE_URL = "http://localhost:" + TEST_SERVER_PORT;
+    private final static String TEST_DB_NAME = "MadArticles_TEST";
 
     private WebDriver webDriver;
+    private InMemoryArticleProvider testArticleProvider;
     private Vertx vertx;
-    private ArticleProvider testArticleProvider;
 
+    /**
+     * Prepares the test environment
+     *
+     * Before each test a new test vertx instance is created. Test data is added
+     * before deploying the MadWebServerVerticle
+     *
+     * @param context
+     */
     @Before
     public void setUp(TestContext context) {
-        // Create some test entries first
-        testArticleProvider = new InMemoryArticleProvider();
-        IntStream.range(1, 10).forEach(intValue -> {
-            Article article = new Article();
-            article.setId(UUID.randomUUID());
-            article.setCreated(LocalDateTime.now().minusDays(intValue));
-            article.setTitle("Test Article " + intValue);
-            article.setPublished(true);
-            article.setContent("<p id=\"" + article.getId().toString()
-                    + "\">Just a test content of article number " + intValue + "</p>");
-            testArticleProvider.addArticle(article);
-        });
-
-        MadWebServerVerticle madServer = new MadWebServerVerticle(testArticleProvider);
-
         vertx = Vertx.vertx();
-        vertx.deployVerticle(madServer, context.asyncAssertSuccess());
+
+        // Prepare the database
+        LocalMap<String, Article> testDb = vertx.sharedData().getLocalMap(TEST_DB_NAME);
+        testArticleProvider = new InMemoryArticleProvider(testDb);
+        addTestArticles();
+
+        // Prepare the deployment configs
+        DeploymentOptions testDeploymentOptions = new DeploymentOptions();
+        testDeploymentOptions.setConfig(new JsonObject());
+        testDeploymentOptions.getConfig().put(MadWebServerVerticle.CONFIG_DB, TEST_DB_NAME);
+        testDeploymentOptions.getConfig().put(MadWebServerVerticle.CONFIG_HTTP_PORT, TEST_SERVER_PORT);
+
+        // Deploy the verticle to be tested
+        vertx.deployVerticle(MadWebServerVerticle.class.getName(), testDeploymentOptions, context.asyncAssertSuccess());
         webDriver = new FirefoxDriver();
         webDriver.get(BASE_URL);
     }
@@ -76,15 +84,19 @@ public class HomePageTest {
         String title = webDriver.getTitle();
         assertEquals("Title shall be '" + "MADDOB | Home" + "', but was '" + title, "MADDOB | Home", title);
         WebElement mainMenu = webDriver.findElement(By.id("menu-main"));
-        assertTrue("Main menu shall be in the middle of the page, otherwise CSS was not correctly loaded", mainMenu.getRect().getX() > 200);
+        assertTrue("Main menu shall be in the middle of the page, otherwise CSS was not correctly loaded",
+                mainMenu.getRect().getX() > 200);
     }
 
     @Test
     public void testThatLatestFourArticlesAreShownOnThePage() {
-        testArticleProvider.getLatestArticles(4).forEach(article -> {
+        IntStream.range(1, 5).forEach(intValue -> {
+            String title = "Test Article " + intValue;
+            Article article = testArticleProvider.getArticleByTitle("Test Article " + intValue);
+            assertNotNull("The test article with a title '" + title + "' was not found in the test database!");
             WebElement element = webDriver.findElement(By.id(article.getId().toString()));
-            assertNotNull("Article '" + article.getTitle() + "', with uuid: " + article.getId().toString()
-                    + " was not found on the main page, but should be there!", element);
+                assertNotNull("Article '" + article.getTitle() + "', with uuid: " + article.getId().toString()
+                        + " was not found on the main page, but should be there!", element);
         });
     }
 
@@ -97,5 +109,23 @@ public class HomePageTest {
         } catch (NoSuchElementException exception) {
             // do nothing, the test will succeed automatically
         }
+    }
+
+    /***************************************** HELPER METHODS *********************************/
+
+    /**
+     * Fills the test database with some dummy articles
+     */
+    private void addTestArticles() {
+        IntStream.range(1, 10).forEach(intValue -> {
+            Article article = new Article();
+            article.setId(UUID.randomUUID());
+            article.setCreated(LocalDateTime.now().minusDays(intValue));
+            article.setTitle("Test Article " + intValue);
+            article.setPublished(true);
+            article.setContent("<p id=\"" + article.getId().toString()
+                    + "\">Just a test content of article number " + intValue + "</p>");
+            testArticleProvider.addArticle(article);
+        });
     }
 }

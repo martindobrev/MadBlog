@@ -19,25 +19,25 @@ public class App
     public static void main( String[] args ) {
         Vertx vertx = Vertx.vertx();
 
-        Article helloWorldArticle = new Article();
-        helloWorldArticle.setId(UUID.randomUUID());
-        helloWorldArticle.setContent("Hello World!");
-        helloWorldArticle.setPublished(true);
-        helloWorldArticle.setTitle("hello");
-        helloWorldArticle.setCreated(LocalDateTime.now());
+//        Article helloWorldArticle = new Article();
+//        helloWorldArticle.setId(UUID.randomUUID());
+//        helloWorldArticle.setContent("Hello World!");
+//        helloWorldArticle.setPublished(true);
+//        helloWorldArticle.setTitle("hello");
+//        helloWorldArticle.setCreated(LocalDateTime.now());
+//
+//        Article dummyArticle = new Article();
+//        dummyArticle.setId(UUID.randomUUID());
+//        dummyArticle.setContent("Dummy Article");
+//        dummyArticle.setPublished(true);
+//        dummyArticle.setTitle("dummy");
+//        dummyArticle.setCreated(LocalDateTime.now().minusDays(2));
+//
+//        ArticleProvider dummyArticleProvider = new InMemoryArticleProvider();
+//        dummyArticleProvider.addArticle(helloWorldArticle);
+//        dummyArticleProvider.addArticle(dummyArticle);
 
-        Article dummyArticle = new Article();
-        dummyArticle.setId(UUID.randomUUID());
-        dummyArticle.setContent("Dummy Article");
-        dummyArticle.setPublished(true);
-        dummyArticle.setTitle("dummy");
-        dummyArticle.setCreated(LocalDateTime.now().minusDays(2));
-
-        ArticleProvider dummyArticleProvider = new InMemoryArticleProvider();
-        dummyArticleProvider.addArticle(helloWorldArticle);
-        dummyArticleProvider.addArticle(dummyArticle);
-
-        MadWebServerVerticle madServer = new MadWebServerVerticle(dummyArticleProvider);
+        MadWebServerVerticle madServer = new MadWebServerVerticle();
         vertx.deployVerticle(madServer);
     }
 }

@@ -1,9 +1,8 @@
 package com.maddob.data;
 
-import java.util.ArrayList;
+import io.vertx.core.shareddata.LocalMap;
+
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -17,15 +16,17 @@ import java.util.stream.Collectors;
 public class InMemoryArticleProvider implements ArticleProvider {
 
     /** actual storage for all articles **/
-    private final Map<String, Article> articleDatabase;
+    private final LocalMap<String, Article> articleDatabase;
 
-    public InMemoryArticleProvider() {
-        this.articleDatabase = new ConcurrentHashMap<String, Article>();
+    public InMemoryArticleProvider(LocalMap<String, Article> articleDatabase) {
+        this.articleDatabase = articleDatabase;
     }
 
     @Override
     public List<Article> getLatestArticles(int number) {
-        return this.articleDatabase.values().stream().limit(number).collect(Collectors.toList());
+        return this.articleDatabase.values().stream()
+                .sorted((a1, a2) -> a2.getCreated().compareTo(a1.getCreated()))
+                .limit(number).collect(Collectors.toList());
     }
 
     @Override
@@ -37,7 +38,7 @@ public class InMemoryArticleProvider implements ArticleProvider {
     public Article getArticleByTitle(String title) {
         if (title != null) {
             return this.articleDatabase.values().stream()
-                    .filter(article -> title.equals(article.getTitle()) ).findFirst().get();
+                    .filter(article -> title.equals(article.getTitle())).findFirst().get();
         }
         return null;
     }
