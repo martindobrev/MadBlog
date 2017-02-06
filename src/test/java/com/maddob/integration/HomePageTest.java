@@ -19,8 +19,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
@@ -49,7 +47,7 @@ public class HomePageTest {
      * Before each test a new test vertx instance is created. Test data is added
      * before deploying the MadWebServerVerticle
      *
-     * @param context
+     * @param context vertx test context
      */
     @Before
     public void setUp(TestContext context) {
@@ -58,13 +56,13 @@ public class HomePageTest {
         // Prepare the database
         LocalMap<String, Article> testDb = vertx.sharedData().getLocalMap(TEST_DB_NAME);
         testArticleProvider = new InMemoryArticleProvider(testDb);
-        addTestArticles();
 
         // Prepare the deployment configs
         DeploymentOptions testDeploymentOptions = new DeploymentOptions();
         testDeploymentOptions.setConfig(new JsonObject());
         testDeploymentOptions.getConfig().put(MadWebServerVerticle.CONFIG_DB, TEST_DB_NAME);
         testDeploymentOptions.getConfig().put(MadWebServerVerticle.CONFIG_HTTP_PORT, TEST_SERVER_PORT);
+        testDeploymentOptions.getConfig().put(MadWebServerVerticle.CONFIG_DB_JSON_PATH, "db/TestMadArticlesDatabase.json");
 
         // Deploy the verticle to be tested
         vertx.deployVerticle(MadWebServerVerticle.class.getName(), testDeploymentOptions, context.asyncAssertSuccess());
@@ -80,7 +78,7 @@ public class HomePageTest {
     }
 
     @Test
-    public void testThatCssLoadedCorrectly(TestContext context) {
+    public void testThatCssLoadedCorrectly() {
         String title = webDriver.getTitle();
         assertEquals("Title shall be '" + "MADDOB | Home" + "', but was '" + title, "MADDOB | Home", title);
         WebElement mainMenu = webDriver.findElement(By.id("menu-main"));
@@ -109,23 +107,5 @@ public class HomePageTest {
         } catch (NoSuchElementException exception) {
             // do nothing, the test will succeed automatically
         }
-    }
-
-    /***************************************** HELPER METHODS *********************************/
-
-    /**
-     * Fills the test database with some dummy articles
-     */
-    private void addTestArticles() {
-        IntStream.range(1, 10).forEach(intValue -> {
-            Article article = new Article();
-            article.setId(UUID.randomUUID());
-            article.setCreated(LocalDateTime.now().minusDays(intValue));
-            article.setTitle("Test Article " + intValue);
-            article.setPublished(true);
-            article.setContent("<p id=\"" + article.getId().toString()
-                    + "\">Just a test content of article number " + intValue + "</p>");
-            testArticleProvider.addArticle(article);
-        });
     }
 }

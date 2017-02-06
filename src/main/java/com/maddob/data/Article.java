@@ -1,9 +1,11 @@
 package com.maddob.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.vertx.core.shareddata.Shareable;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -22,7 +24,8 @@ public class Article implements Shareable {
     private String title;
 
     /** Timestamp of the creation */
-    private LocalDateTime created;
+    @JsonFormat(pattern = "dd.MM.yyyy")
+    private LocalDate created;
 
     /** Flag to publish the article */
     private boolean published;
@@ -48,11 +51,11 @@ public class Article implements Shareable {
         this.title = title;
     }
 
-    public LocalDateTime getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime createdAt) {
+    public void setCreated(LocalDate createdAt) {
         this.created = createdAt;
     }
 

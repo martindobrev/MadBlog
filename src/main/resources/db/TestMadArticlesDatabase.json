@@ -1,0 +1,59 @@
+{
+  "name"        : "MadBlog DEFAULT TEST DATABASE",
+  "desciption"  : "The default database to be used by the MadBlog tests if no other is provided",
+  "articles"    : [{
+    "id" : "00000000-0000-0000-0000-000000000001",
+    "title": "Test Article 1",
+    "created" : "10.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000001'>Just a test content of article number 1</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000002",
+    "title": "Test Article 2",
+    "created" : "09.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000002'>Just a test content of article number 2</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000003",
+    "title": "Test Article 3",
+    "created" : "08.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000003'>Just a test content of article number 3</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000004",
+    "title": "Test Article 4",
+    "created" : "07.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000004'>Just a test content of article number 4</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000005",
+    "title": "Test Article 5",
+    "created" : "05.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000005'>Just a test content of article number 5</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000005",
+    "title": "Test Article 5",
+    "created" : "04.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000005'>Just a test content of article number 5</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000006",
+    "title": "Test Article 6",
+    "created" : "03.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000006'>Just a test content of article number 6</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000007",
+    "title": "Test Article 7",
+    "created" : "02.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000007'>Just a test content of article number 7</p>"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000008",
+    "title": "Test Article 8",
+    "created" : "01.01.2017",
+    "published": true,
+    "content": "<p id='00000000-0000-0000-0000-000000000008'>Just a test content of article number 8</p>"
+  }]
+}

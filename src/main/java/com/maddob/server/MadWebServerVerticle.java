@@ -1,10 +1,16 @@
 package com.maddob.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.maddob.data.Article;
 import com.maddob.data.ArticleProvider;
 import com.maddob.data.InMemoryArticleProvider;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.FileSystem;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -12,7 +18,9 @@ import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * WebServer verticle for the blog
@@ -37,6 +45,11 @@ public class MadWebServerVerticle extends AbstractVerticle {
      * Constant to be used for configuration of the in-local-memory database
      */
     public static final String CONFIG_DB = "DB";
+
+    /**
+     * Constant to be used for configuration of the initial database
+     */
+    public static final String CONFIG_DB_JSON_PATH = "DB_JSON_PATH";
 
     /**
      * Constant to be sued for configuration of the HTTP port for the web server
@@ -65,6 +78,35 @@ public class MadWebServerVerticle extends AbstractVerticle {
         int port = config().getInteger(CONFIG_HTTP_PORT, HTTP_PORT_DEFAULT);
         LocalMap<String, Article> localDatabase = vertx.sharedData().getLocalMap(databaseLocalShareMapName);
         articleProvider = new InMemoryArticleProvider(localDatabase);
+
+        // Load articles from a file, if a path is specified
+        String databasePath = config().getString(CONFIG_DB_JSON_PATH, "db/DefaultMadArticlesDatabase.json");
+        FileSystem fileSystem = vertx.fileSystem();
+        Buffer buffer = fileSystem.readFileBlocking(databasePath);
+
+        JsonObject json = buffer.toJsonObject();
+        Logger.getAnonymousLogger().info(json.toString());
+
+        // Trying to import articles from a file
+        JsonArray array = json.getJsonArray("articles");
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        array.stream().forEach(articleJson -> {
+            Logger.getAnonymousLogger().info("Importing article " + articleJson.toString());
+            try {
+                Article article = mapper.readValue(articleJson.toString(), Article.class);
+                Logger.getAnonymousLogger().info("----> SUCCESS");
+                articleProvider.addArticle(article);
+            } catch (IOException e) {
+                Logger.getAnonymousLogger().info("!!!-> ERROR: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        if (articleProvider.getAllArticles().size() > 0) {
+            Logger.getAnonymousLogger().info("Successfully loaded " + articleProvider.getAllArticles().size() + " articles");
+        } else {
+            Logger.getAnonymousLogger().info("No articles were loaded! Please make sure you provided a valid path to a json-article-database!");
+        }
 
         server = getVertx().createHttpServer();
         Router router = Router.router(getVertx());

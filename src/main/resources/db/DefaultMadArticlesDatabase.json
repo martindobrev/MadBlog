@@ -1,0 +1,29 @@
+{
+  "name"        : "MadBlog default database",
+  "desciption"  : "The default database to be used by the MadBlog if no other is provided",
+  "articles"    : [{
+    "id" : "00000000-0000-0000-0000-000000000001",
+    "title": "Hello World Article",
+    "created" : "01.02.2017",
+    "published": true,
+    "content": "This is the first article from the default database"
+  },{
+      "id" : "00000000-0000-0000-0000-000000000002",
+      "title": "Second Article",
+      "created" : "02.02.2017",
+      "published": true,
+      "content": "Just another article ... Why are you using the default database? Too boring!"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000003",
+    "title": "Boring articleee",
+    "created" : "03.02.2017",
+    "published": true,
+    "content": "Really!!! What is this? Just switch the DB!!!"
+  },{
+    "id" : "00000000-0000-0000-0000-000000000004",
+    "title": "Please redesign the default db - make it really funny",
+    "created" : "04.02.2017",
+    "published": true,
+    "content": "This database is too boring, make some cool adjustments to showcase with some images etc."
+  }]
+}
