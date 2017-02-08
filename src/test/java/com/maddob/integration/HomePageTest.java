@@ -19,6 +19,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import java.time.LocalDate;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
@@ -104,6 +106,29 @@ public class HomePageTest {
         try {
             WebElement element = webDriver.findElement(By.id(fifthArticle.getId().toString()));
             fail("The fifth article shall not be displayed on the home page");
+        } catch (NoSuchElementException exception) {
+            // do nothing, the test will succeed automatically
+        }
+    }
+
+    @Test
+    public void testThatUnpublishedArticlesAreNotShownOnThePage() {
+        Article newUnpublishedArticle = new Article();
+        newUnpublishedArticle.setTitle("THIS ARTICLE SHALL NOT BE VISIBLE!");
+        newUnpublishedArticle.setId(UUID.randomUUID());
+        newUnpublishedArticle.setContent("<p id='{uuid}'>Some dummy content</p>"
+                .replace("{uuid}", newUnpublishedArticle.getId().toString()));
+        newUnpublishedArticle.setCreated(LocalDate.now());
+        newUnpublishedArticle.setPublished(false);
+
+        testArticleProvider.addArticle(newUnpublishedArticle);
+
+        // RELOAD PAGE
+        webDriver.get(BASE_URL);
+
+        try {
+            WebElement element = webDriver.findElement(By.id(newUnpublishedArticle.getId().toString()));
+            fail("The unpublished article shall not be displayed on the home page!");
         } catch (NoSuchElementException exception) {
             // do nothing, the test will succeed automatically
         }
