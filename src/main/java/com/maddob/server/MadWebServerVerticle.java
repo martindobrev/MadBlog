@@ -75,7 +75,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
 
         // Initialize article provider
         String databaseLocalShareMapName = config().getString(CONFIG_DB, DB_NAME_DEFAULT);
-        int port = config().getInteger(CONFIG_HTTP_PORT, HTTP_PORT_DEFAULT);
+        final int PORT = config().getInteger(CONFIG_HTTP_PORT, HTTP_PORT_DEFAULT);
         LocalMap<String, Article> localDatabase = vertx.sharedData().getLocalMap(databaseLocalShareMapName);
         articleProvider = new InMemoryArticleProvider(localDatabase);
 
@@ -110,7 +110,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
 
         server = getVertx().createHttpServer();
         Router router = Router.router(getVertx());
-        final String baseUrl = "http://localhost:" + port;
+
 
         // In order to use a Thymeleaf template we first need to create an engine
         // We also set the template resolver to be a class loader template resolver
@@ -125,7 +125,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
 
         // Render the home page
         router.get("/").handler(ctx -> {
-            ctx.put("BASE_URL", baseUrl);
+            ctx.put("BASE_URL", "http://" + ctx.request().host());
             ctx.put("CURRENT_PAGE", "");
             ctx.put("title", "MADDOB | Home");
             List<Article> articles = articleProvider.getLatestArticles(4);
@@ -141,7 +141,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
 
         // Render the about page
         router.get("/about").handler(ctx -> {
-            ctx.put("BASE_URL", baseUrl);
+            ctx.put("BASE_URL", "http://" + ctx.request().host());
             ctx.put("CURRENT_PAGE", "about");
             ctx.put("title", "MADDOB | About");
             engine.render(ctx, "about", res -> {
@@ -155,7 +155,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
 
         // Render a list of all available articles
         router.get("/articles").handler(ctx -> {
-            ctx.put("BASE_URL", baseUrl);
+            ctx.put("BASE_URL", "http://" + ctx.request().host());
             ctx.put("CURRENT_PAGE", "articles");
             ctx.put("title", "MADDOB | Articles overview");
             List<Article> articles = articleProvider.getAllArticles();
@@ -176,7 +176,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
             if (null == article) {
                 ctx.fail(404);
             } else {
-                ctx.put("BASE_URL", baseUrl);
+                ctx.put("BASE_URL", "http://" + ctx.request().host());
                 ctx.put("CURRENT_PAGE", "article");
                 ctx.put("article", article);
                 engine.render(ctx, "article", res -> {
@@ -190,7 +190,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
         });
 
         router.route("/*").handler(StaticHandler.create());
-        server.requestHandler(router::accept).listen(port);
+        server.requestHandler(router::accept).listen(PORT);
     }
 
     @Override

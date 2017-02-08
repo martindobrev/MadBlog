@@ -22,11 +22,7 @@
   <div class="uk-container">
     <!--/*@thymesVar id="articles" type="java.util.List<com.maddob.data.Article>"*/-->
     <article class="uk-article" th:each="article : ${articles}">
-      <h1 class="uk-article-title">
-        <!--/*@thymesVar id="article" type="com.maddob.data.Article"*/-->
-        <!--/*@thymesVar id="BASE_URL" type=""*/-->
-        <a class="uk-link-reset" th:href="@{{baseUrl}/articles/{articleTitle}(articleTitle=${article.title},baseUrl=${BASE_URL})}" th:text="${article.title}"></a>
-      </h1>
+      <h3 th:text="${article.title}"></h3>
       <p class="uk-article-meta">Published on <span th:text="${#temporals.format(article.created, 'dd.MM.yyyy')}">24.01.1970</span></p>
       <p class="uk-text-lead">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
@@ -34,7 +30,7 @@
       </p>
       <div class="uk-grid-small uk-child-width-auto" uk-grid>
         <div>
-          <a class="uk-button uk-button-text" href="#">Read more</a>
+          <a class="uk-button uk-button-text" href="#" th:href="@{{baseUrl}/articles/{articleTitle}(articleTitle=${article.title},baseUrl=${BASE_URL})}">Read more</a>
         </div>
       </div>
     </article>
