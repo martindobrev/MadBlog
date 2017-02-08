@@ -26,7 +26,7 @@ public class InMemoryArticleProvider implements ArticleProvider {
     public List<Article> getLatestArticles(int number) {
         return this.articleDatabase.values().stream()
                 .sorted((a1, a2) -> a2.getCreated().compareTo(a1.getCreated()))
-                .limit(number).collect(Collectors.toList());
+                .limit(number).filter(article -> article.isPublished()).collect(Collectors.toList());
     }
 
     @Override
