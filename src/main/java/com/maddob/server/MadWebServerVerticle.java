@@ -5,6 +5,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.maddob.data.Article;
 import com.maddob.data.ArticleProvider;
 import com.maddob.data.InMemoryArticleProvider;
+import com.maddob.file.FileProvider;
+import com.maddob.file.FolderFileProvider;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystem;
@@ -12,7 +14,9 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
+import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.ThymeleafTemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
@@ -20,6 +24,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -68,6 +73,7 @@ public class MadWebServerVerticle extends AbstractVerticle {
 
     private HttpServer server;
     private ArticleProvider articleProvider;
+    private FileProvider fileProvider;
 
     @Override
     public void start() throws Exception {
@@ -108,8 +114,12 @@ public class MadWebServerVerticle extends AbstractVerticle {
             Logger.getAnonymousLogger().info("No articles were loaded! Please make sure you provided a valid path to a json-article-database!");
         }
 
+        // initialize the file provider
+        fileProvider = new FolderFileProvider("/Users/martindobrev/Temp/vertxupload/files");
+
         server = getVertx().createHttpServer();
         Router router = Router.router(getVertx());
+
 
 
         // In order to use a Thymeleaf template we first need to create an engine
@@ -187,6 +197,29 @@ public class MadWebServerVerticle extends AbstractVerticle {
                     }
                 });
             }
+        });
+
+        // Render admin home page
+        router.get("/admin").handler(ctx -> {
+            ctx.put("BASE_URL", "http://" + ctx.request().host());
+            ctx.put("CURRENT_PAGE", "admin");
+            ctx.put("title", "MADDOB | Admin");
+            engine.render(ctx, "admin", res -> {
+                if (res.succeeded()) {
+                    ctx.response().end(res.result());
+                } else {
+                    ctx.fail(res.cause());
+                }
+            });
+        });
+
+        router.route("/admin/files/upload").handler(
+                BodyHandler.create().setUploadsDirectory("/Users/martindobrev/vertxupload/temp"));
+        router.post("/admin/files/upload").handler(ctx -> {
+            Set<FileUpload> uploads = ctx.fileUploads();
+            // save all uploaded files
+            uploads.forEach(fileUpload -> fileProvider.saveFile(fileUpload));
+            ctx.response().end();
         });
 
         router.route("/*").handler(StaticHandler.create());

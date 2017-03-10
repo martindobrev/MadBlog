@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*@thymesVar id="BASE_URL" type="java.lang.String"*/-->
+    <!--/*@thymesVar id="title" type="java.lang.String"*/-->
+    <title th:text="${title}">Hello World</title>
+    <link rel="stylesheet" href="../webroot/uikit/css/uikit.min.css" th:href="@{{baseUrl}/uikit/css/uikit.min.css(baseUrl=${BASE_URL})}">
+    <script src="../webroot/jquery/jquery.min.js" th:src="@{{baseUrl}/jquery/jquery.min.js(baseUrl=${BASE_URL})}"></script>
+    <script src="../webroot/uikit/js/uikit.min.js" th:src="@{{baseUrl}/uikit/js/uikit.min.js(baseUrl=${BASE_URL})}"></script>
+</head>
+<body>
+
+
+<h2>ADMIN AREA - ONLY FOR SUPERUSERS</h2>
+
+
+<div class="uk-section uk-section-small">
+    <div class="uk-container">
+        <p>Upload image here</p>
+
+        <div class="test-upload" uk-form-custom>
+            <input type="file" multiple>
+            <button class="uk-button uk-button-default" type="button" tabindex="-1">Select</button>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div th:include="fragments :: footer" th:remove="tag"></div>
+
+<script type="text/javascript">
+
+(function ($) {
+    UIkit.upload('.test-upload', {
+        url: 'admin/files/upload',
+        multiple: false,
+        beforeSend: function() { console.log('beforeSend', arguments); },
+        beforeAll: function() { console.log('beforeAll', arguments); },
+        load: function() { console.log('load', arguments); },
+        error: function() { console.log('error', arguments); },
+        complete: function() { console.log('complete', arguments); },
+
+        loadStart: function (e) {
+            console.log('loadStart', arguments);
+        },
+
+        progress: function (e) {
+            console.log('progress', arguments);
+        },
+
+        loadEnd: function (e) {
+            console.log('loadEnd', arguments);
+         },
+
+        completeAll: function () {
+            console.log('completeAll', arguments);
+            alert('Upload Completed');
+        }
+    });
+})(jQuery);
+</script>
+
+</body>
+</html>
