@@ -2,7 +2,7 @@ package com.maddob.file;
 
 import io.vertx.ext.web.FileUpload;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -21,7 +21,7 @@ public interface FileProvider {
      *
      * @return a list of file instances
      */
-    List<File> getAvailableFiles();
+    List<Path> getAvailableFiles();
 
     /**
      * Gets a file by name
@@ -31,7 +31,7 @@ public interface FileProvider {
      * @param filename name of the file that is to be retrieved
      * @return file instance or null if not available
      */
-    File getFileByName(String filename);
+    Path getFileByName(String filename);
 
     /**
      * Stores the file from a FileUpload

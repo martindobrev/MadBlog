@@ -1,10 +1,11 @@
 package com.maddob.file;
 
-import com.sun.tools.doclets.internal.toolkit.util.DocFinder;
 import io.vertx.ext.web.FileUpload;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
 public class FolderFileProvider implements FileProvider {
 
     private String path;
-
+    private Path dir;
 
     public FolderFileProvider(String path) throws IOException {
 
@@ -33,15 +34,32 @@ public class FolderFileProvider implements FileProvider {
         }
 
         this.path = path;
+        this.dir = Paths.get(path);
     }
 
     @Override
-    public List<File> getAvailableFiles() {
-        return null;
+    public List<Path> getAvailableFiles() {
+
+        List<Path> result = new ArrayList<>();
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.{jpeg,jpg,png,gif}")) {
+            for (Path entry: stream) {
+                result.add(entry);
+            }
+        } catch (DirectoryIteratorException ex) {
+            // I/O error encounted during the iteration, the cause is an IOException
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+        return result;
     }
 
+
+
     @Override
-    public File getFileByName(String filename) {
+    public Path getFileByName(String filename) {
         return null;
     }
 

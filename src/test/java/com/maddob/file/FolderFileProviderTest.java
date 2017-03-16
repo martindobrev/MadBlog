@@ -84,8 +84,8 @@ public class FolderFileProviderTest {
 
     @Test
     public void testGetFiles() {
-        List<File> files = fileProvider.getAvailableFiles();
+        List<Path> files = fileProvider.getAvailableFiles();
         assertNotNull("Rusult shall not be null", files);
-        assertEquals(0, files.size());
+        assertEquals(7, files.size());
     }
 }
