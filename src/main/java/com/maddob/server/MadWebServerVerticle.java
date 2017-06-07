@@ -189,6 +189,16 @@ public class MadWebServerVerticle extends AbstractVerticle {
             }
         });
 
+        router.get("/admin").handler(ctx -> {
+            engine.render(ctx, "admin", res -> {
+                if (res.succeeded()) {
+                    ctx.response().end(res.result());
+                } else {
+                    ctx.fail(res.cause());
+                }
+            });
+        });
+
         router.route("/*").handler(StaticHandler.create());
         server.requestHandler(router::accept).listen(PORT);
     }

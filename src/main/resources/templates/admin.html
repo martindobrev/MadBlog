@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*@thymesVar id="title" type="java.lang.String"*/-->
+    <!--/*@thymesVar id="BASE_URL" type="java.lang.String"*/-->
+    <title th:text="${title}">Hello World</title>
+    <link rel="stylesheet" href="../webroot/uikit/css/uikit.min.css" th:href="@{{baseUrl}/uikit/css/uikit.min.css(baseUrl=${BASE_URL})}">
+
+</head>
+<body>
+
+<div th:include="fragments :: admin-header" th:remove="tag"></div>
+
+
+<h1>WELCOME TO ADMIN AREA</h1>
+<button id="clickme">CLICK ME</button>
+
+<div th:include="fragments :: footer" th:remove="tag"></div>
+
+
+<script src="../webroot/jquery/jquery.min.js" th:src="@{{baseUrl}/jquery/jquery.min.js(baseUrl=${BASE_URL})}"></script>
+<script src="../webroot/uikit/js/uikit.min.js" th:src="@{{baseUrl}/uikit/js/uikit.min.js(baseUrl=${BASE_URL})}"></script>
+<script src="../webroot/kotlin/kotlin.js" th:src="@{{baseUrl}/kotlin/kotlin.js(baseUrl=${BASE_URL})}"></script>
+<script src="../webroot/kotlin/madblog.js" th:src="@{{baseUrl}/kotlin/madblog.js(baseUrl=${BASE_URL})}"></script>
+</body>
+</html>

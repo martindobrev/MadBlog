@@ -32,6 +32,31 @@
   </div>
 </div>
 
+<!-- Admin header fragment -->
+<div th:fragment="admin-header">
+  <div class="uk-container">
+    <nav class="uk-navbar-container uk-navbar-transparent" id="menu" uk-navbar>
+      <div class="uk-navbar-left" id="menu-logo">
+        <div style="padding-left: 0" class="uk-navbar-item uk-logo">maddob.com</div>
+      </div>
+      <div class="uk-navbar-center" id="menu-main">
+        <ul class="uk-navbar-nav">
+          <!--/*@thymesVar id="BASE_URL" type="java.lang.String"*/-->
+          <li th:class="${CURRENT_PAGE} == ''? 'uk-active' : 'uk-inactive'">
+            <a th:href="@{{baseUrl}/(baseUrl=${BASE_URL})}">Dashboard</a>
+          </li>
+          <li th:class="${CURRENT_PAGE} == 'articles'? 'uk-active' : 'uk-inactive'">
+            <a th:href="@{{baseUrl}/articles(baseUrl=${BASE_URL})}">Articles</a>
+          </li>
+          <li th:class="${CURRENT_PAGE} == 'about'? 'uk-active' : 'uk-inactive'">
+            <a th:href="@{{baseUrl}/about(baseUrl=${BASE_URL})}">Files</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
+
 <!-- footer fragment -->
 <div th:fragment="footer">
   <div class="uk-section uk-section-small uk-section-secondary">
